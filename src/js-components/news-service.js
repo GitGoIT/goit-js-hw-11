@@ -1,19 +1,20 @@
 export default class NewsApiService { // створюємо окремий класс для роботи з АРІ
+
     constructor() {
         this.searchQuery = ''; // оголошуємо глобальну змінну в конструкторі для подальшого перезапису через метод get та set
         this.page = 1; // вводимо параметер номера сторінки для можливості догрузки 
         
     }
-    fetchArticles(searchQuery) {  // формуємо єдиний метод який буде відповідати за HTTP запити
+    fetchHits(searchQuery) {  // формуємо єдиний метод який буде відповідати за HTTP запити
         console.log(this);
-        const url = `https://pixabay.com/api/?key=32070440-da23fcdb10bb13069c595106c&q=${this.searchQuery}&image_type=photo&lang=en&orientation=horizontal&page=${this.page}&per_page=40`
+        const url = `https://pixabay.com/api/?key=32070440-da23fcdb10bb13069c595106c&q=${this.searchQuery}&image_type=photo&lang=en&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`
     
     return fetch(url)  //забираємо проміс даних по лінку API
         .then(r => r.json()) //парсимо дані в текстовий формат json
         .then(data => {    
             this.incrementPage(); // догружаємо сторінки з даними при кожному кліку на load more(метод описаний нижче)
             console.log(data)
-            return data.articles; // повертаємо у зовнішній код проміс значення об'єкту даних
+            return data.hits; // повертаємо у зовнішній код проміс значення об'єкту даних
         })     
     } 
 

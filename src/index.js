@@ -2,7 +2,7 @@ import NewsApiService from './js-components/news-service' // імпортуєм�
 
 const searchForm = document.querySelector('#search-form');     // отримуємо доступ до форми
 const input = document.querySelector('input[name="searchQuery"]');     // отримуємо доступ до інпуту
-const articlesContainer = document.querySelector('.gallery');  // отримуємо доступ до поля карток
+const hitsContainer = document.querySelector('.gallery');  // отримуємо доступ до поля карток
 const loadMoreBtn = document.querySelector('.load-more');  // отримуємо доступ до пкнопки дозавантаження
 
 const newsApiService = new NewsApiService(); // створюємо новий об'єкт для обробки методу роботи з API
@@ -20,22 +20,46 @@ function onSearch(e) {  // функція першої загрузки резу
     }
     newsApiService.resetPage(); // додаємо на submit метод скдинання сторінки до 1-ї при новому пошуку (описуємо в класі NewsApiService)
     console.log(newsApiService.query);
-    newsApiService.fetchArticles(searchQuery) // викликаємо єдиний спільний метод роботи з API
-        .then(articles => {
-            clearArticlesContainer(); // чистимо контейнер перед завантаженням даними наступного пошуку
-            appendArticlesMarkup(articles); // посилаємо для мапінгу в дом значення об'єктів даних
+    newsApiService.fetchHits(searchQuery) // викликаємо єдиний спільний метод роботи з API
+        .then(hits => {
+            clearHitsContainer(); // чистимо контейнер перед завантаженням даними наступного пошуку
+            appendHitsMarkup(hits); // посилаємо для мапінгу в дом значення об'єктів даних
         });
 }
 
 function onLoadMore(e) { // функція наступних догрузок результатів пошуку
-    newsApiService.fetchArticles(searchQuery)  // викликаємо єдиний спільний метод роботи з API
-        .then(appendArticlesMarkup); // посилаємо для мапінгу в дом значення об'єктів даних
+    newsApiService.fetchHits(searchQuery)  // викликаємо єдиний спільний метод роботи з API
+        .then(appendHitsMarkup); // посилаємо для мапінгу в дом значення об'єктів даних
 }
     
-function appendArticlesMarkup(articles) { // функція загрузки в контейнер та мапінгу в дом значення об'єктів даних
-    articlesContainer.insertAdjacentHTML('beforeend', articlesTpl(articles)); 
+function appendHitsMarkup(hits) { // функція загрузки в контейнер та мапінгу в дом значення об'єктів даних
+    hitsContainer.insertAdjacentHTML('beforeend', hitsTpl(hits)); 
 }
 
-function clearArticlesContainer() { // функція очистки контейнеру перед мапінгом в дом значень іншого пошуку
-    articlesContainer.innerHTML = '';
+function clearHitsContainer() { // функція очистки контейнеру перед мапінгом в дом значень іншого пошуку
+    hitsContainer.innerHTML = '';
+}
+
+function hitsTpl(hits) { // функцію шаблону мапінгу результатів фетчу в дом
+    const markup = hits.map(hit => { // мапимо дані з API в заготовку html для картки
+        return `<div class="photo-card">
+                <img class="img-card" src="${hit.webformatURL}" alt="${hit.tags}" loading="lazy"/>
+                <div class="info">
+                  <p class="info-item">
+                  <b>Likes</b> ${hit.likes}
+                  </p>
+                  <p class="info-item">
+                  <b>Views</b> ${hit.views}
+                  </p>
+                  <p class="info-item">
+                  <b>Comments</b> ${hit.comments}
+                  </p>
+                  <p class="info-item">
+                  <b>Downloads</b> ${hit.downloads}
+                  </p>
+              </div>
+            </div>`;
+    })
+    .join(''); // об'єднуємо всі елементи масиву в строку та розділяємо 'пробілом' (прибираємо коми за замовчуванням)
+    hitsContainer.innerHTML = markup; // прописуємо новий html картки в домі
 }
