@@ -12,7 +12,7 @@ export default class NewsApiService { // створюємо окремий кл�
         const url = `https://pixabay.com/api/?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&lang=en&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`
     
     return fetch(url)  //забираємо проміс даних по лінку API
-        .then(respense => respense.json()) //парсимо дані в текстовий формат json
+        .then(response => response.json()) //парсимо дані в текстовий формат json
         .then(({ hits }) => {    
             this.incrementPage(); // догружаємо сторінки з даними при кожному кліку на load more(метод описаний нижче)
             return hits; // повертаємо у зовнішній код проміс значення об'єкту даних
